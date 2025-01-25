@@ -137,7 +137,7 @@ internal sealed partial class WellKnownTypes(Compilation compilation)
     public MetadataMethodSymbol SystemObject_ToString => LazyInitializer.EnsureInitialized(
         ref this.object_ToString,
         () => this.SystemObject
-            .Members
+            .AllMembers
             .OfType<MetadataMethodSymbol>()
             .Single(m => m.Name == "ToString"));
     private MetadataMethodSymbol? object_ToString;
@@ -148,7 +148,7 @@ internal sealed partial class WellKnownTypes(Compilation compilation)
     public MetadataMethodSymbol SystemString_Format => LazyInitializer.EnsureInitialized(
         ref this.systemString_Format,
         () => this.SystemString
-            .Members
+            .AllMembers
             .OfType<MetadataMethodSymbol>()
             .First(m =>
                 m.Name == "Format"
@@ -161,7 +161,7 @@ internal sealed partial class WellKnownTypes(Compilation compilation)
     public MetadataMethodSymbol SystemString_Concat => LazyInitializer.EnsureInitialized(
         ref this.systemString_Concat,
         () => this.SystemString
-            .Members
+            .AllMembers
             .OfType<MetadataMethodSymbol>()
             .First(m =>
                 m.Name == "Concat"
@@ -204,7 +204,7 @@ internal sealed partial class WellKnownTypes(Compilation compilation)
     /// </summary>
     /// <param name="type">The reflected type to translate.</param>
     /// <returns>The translated type symbol, or <see langword="null"/> if it's not a translatable primitive type.</returns>
-    public TypeSymbol? TranslatePrmitive(Type type)
+    public TypeSymbol? TranslatePrimitive(Type type)
     {
         if (type == typeof(byte)) return this.SystemByte;
         if (type == typeof(ushort)) return this.SystemUInt16;
@@ -247,7 +247,7 @@ internal sealed partial class WellKnownTypes(Compilation compilation)
     }
 
     public Symbol GetDotnetTypeFromAssembly(MetadataAssemblySymbol assembly, ImmutableArray<string> path) =>
-        assembly.Lookup(path).Where(s => s.IsDotnetType).First();
+        assembly.Lookup(path).Where(s => s.IsTypeOnCilLevel).First();
 
     private MetadataAssemblySymbol GetAssemblyWithAssemblyName(AssemblyName name) =>
         compilation.MetadataAssemblies.First(asm => AssemblyNameComparer.Full.Equals(asm.AssemblyName, name));

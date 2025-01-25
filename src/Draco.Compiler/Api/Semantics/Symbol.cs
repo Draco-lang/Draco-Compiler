@@ -243,7 +243,7 @@ internal abstract class SymbolBase(Symbol symbol) : ISymbol
     public bool IsSpecialName => this.Symbol.IsSpecialName;
     public Location? Definition => this.Symbol.DeclaringSyntax?.Location;
     public string Documentation => this.Symbol.Documentation.ToMarkdown();
-    public IEnumerable<ISymbol> Members => this.Symbol.Members.Select(x => x.ToApiSymbol());
+    public IEnumerable<ISymbol> Members => this.Symbol.AllMembers.Select(x => x.ToApiSymbol());
     public bool IsGenericDefinition => this.Symbol.IsGenericDefinition;
     public bool IsGenericInstance => this.Symbol.IsGenericInstance;
     public ISymbol? GenericDefinition => this.Symbol.GenericDefinition?.ToApiSymbol();

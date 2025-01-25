@@ -43,7 +43,7 @@ internal abstract partial class Symbol
     /// 
     /// In the .NET world, static classes are types too, but in Draco they are modules instead.
     /// </summary>
-    public bool IsDotnetType => this is TypeSymbol or ModuleSymbol;
+    public bool IsTypeOnCilLevel => this is TypeSymbol or ModuleSymbol;
 
     /// <summary>
     /// The root of this hierarchy.
@@ -83,17 +83,17 @@ internal abstract partial class Symbol
         || (this.ContainingSymbol?.IsInGenericContext ?? false);
 
     /// <summary>
-    /// The metadata name of this symbol.
+    /// The metadata name of this symbol which is used to reference it in CIL metadata.
     /// </summary>
     public virtual string MetadataName => this.Name;
 
     /// <summary>
-    /// The name of this symbol.
+    /// The name logical of this symbol that can be used to reference it in code.
     /// </summary>
     public virtual string Name => string.Empty;
 
     /// <summary>
-    /// The fully qualified name of this symbol.
+    /// The fully qualified name of this symbol, generally used for debugging or error messages.
     /// </summary>
     public virtual string FullName
     {
@@ -108,7 +108,7 @@ internal abstract partial class Symbol
     }
 
     /// <summary>
-    /// The fully qualified metadata name of this symbol.
+    /// The fully qualified metadata name of this symbol that can be used to reference it in CIL metadata.
     /// </summary>
     public virtual string MetadataFullName
     {
@@ -125,9 +125,9 @@ internal abstract partial class Symbol
     }
 
     /// <summary>
-    /// All the members within this symbol.
+    /// All the members within this symbol, including inherited ones.
     /// </summary>
-    public virtual IEnumerable<Symbol> Members => this.DefinedMembers;
+    public virtual IEnumerable<Symbol> AllMembers => this.DefinedMembers;
 
     /// <summary>
     /// The members defined directly in this symbol.
@@ -137,12 +137,12 @@ internal abstract partial class Symbol
     /// <summary>
     /// The static members within this symbol.
     /// </summary>
-    public IEnumerable<Symbol> StaticMembers => this.Members.Where(x => x is IMemberSymbol mem && mem.IsStatic);
+    public IEnumerable<Symbol> StaticMembers => this.AllMembers.Where(x => x is IMemberSymbol mem && mem.IsStatic);
 
     /// <summary>
     /// The instance members within this symbol.
     /// </summary>
-    public IEnumerable<Symbol> InstanceMembers => this.Members.Where(x => x is IMemberSymbol mem && !mem.IsStatic);
+    public IEnumerable<Symbol> InstanceMembers => this.AllMembers.Where(x => x is IMemberSymbol mem && !mem.IsStatic);
 
     /// <summary>
     /// The structured documentation attached to this symbol.
@@ -157,7 +157,7 @@ internal abstract partial class Symbol
     /// <summary>
     /// The visibility of this symbol.
     /// </summary>
-    public virtual Api.Semantics.Visibility Visibility => Api.Semantics.Visibility.Internal;
+    public virtual Visibility Visibility => Visibility.Internal;
 
     /// <summary>
     /// The syntax declaring this symbol.
@@ -188,6 +188,9 @@ internal abstract partial class Symbol
     /// The kind of this symbol.
     /// </summary>
     public abstract SymbolKind Kind { get; }
+
+    public abstract void Accept(SymbolVisitor visitor);
+    public abstract TResult Accept<TResult>(SymbolVisitor<TResult> visitor);
 
     /// <summary>
     /// Checks if this symbol can be shadowed by <paramref name="other"/> symbol.
@@ -233,9 +236,6 @@ internal abstract partial class Symbol
     /// </summary>
     /// <returns>The equivalent API symbol.</returns>
     public abstract ISymbol ToApiSymbol();
-
-    public abstract void Accept(SymbolVisitor visitor);
-    public abstract TResult Accept<TResult>(SymbolVisitor<TResult> visitor);
 
     /// <summary>
     /// Checks, if this symbol is visible from another symbol.
@@ -294,7 +294,7 @@ internal abstract partial class Symbol
             builder!
                 .AddVertex(symbol)
                 .WithLabel($"{symbol.GetType().Name}\n{symbol}");
-            foreach (var m in symbol.Members)
+            foreach (var m in symbol.AllMembers)
             {
                 builder.AddEdge(symbol, m);
                 Recurse(m);
@@ -322,11 +322,23 @@ internal abstract partial class Symbol
         return string.Empty;
     }
 
-    private protected static Api.Semantics.Visibility GetVisibilityFromTokenKind(TokenKind? kind) => kind switch
+    /// <summary>
+    /// Translates the given token kind into a visibility modifier. On null, private is assumed.
+    /// </summary>
+    /// <param name="kind">The token kind to translate.</param>
+    /// <returns>The visibility modifier that <paramref name="kind"/> denotes.</returns>
+    private protected static Visibility GetVisibilityFromTokenKind(TokenKind? kind) => kind switch
     {
-        null => Api.Semantics.Visibility.Private,
-        TokenKind.KeywordInternal => Api.Semantics.Visibility.Internal,
-        TokenKind.KeywordPublic => Api.Semantics.Visibility.Public,
+        null => Visibility.Private,
+        TokenKind.KeywordInternal => Visibility.Internal,
+        TokenKind.KeywordPublic => Visibility.Public,
         _ => throw new InvalidOperationException($"illegal visibility modifier token {kind}"),
     };
+
+    /// <summary>
+    /// Retrieves additional symbols for this symbol that should live in the same scope as this symbol itself.
+    /// This returns the constructor functions for types for example.
+    /// </summary>
+    /// <returns>The additional symbols for this symbol.</returns>
+    protected internal virtual IEnumerable<Symbol> GetAdditionalSymbols() => [];
 }

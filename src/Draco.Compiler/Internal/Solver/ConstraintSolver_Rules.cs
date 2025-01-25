@@ -89,7 +89,7 @@ internal sealed partial class ConstraintSolver
                 }
 
                 // Not a type variable, we can look into members
-                var membersWithName = accessed.Members
+                var membersWithName = accessed.AllMembers
                     .Where(m => m.Name == member.MemberName)
                     .ToImmutableArray();
                 if (membersWithName.Length == 0)
@@ -153,7 +153,7 @@ internal sealed partial class ConstraintSolver
                 }
 
                 // Not a type variable, we can look into members
-                var indexers = accessed.Members
+                var indexers = accessed.AllMembers
                     .OfType<PropertySymbol>()
                     .Where(p => p.IsIndexer)
                     .Select(p => indexer.IsGetter ? p.Getter : p.Setter)

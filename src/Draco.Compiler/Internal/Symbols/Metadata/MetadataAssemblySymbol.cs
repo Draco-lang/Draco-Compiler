@@ -21,7 +21,7 @@ internal class MetadataAssemblySymbol(
     public override ImmutableArray<AttributeInstance> Attributes => InterlockedUtils.InitializeDefault(ref this.attributes, this.BuildAttributes);
     private ImmutableArray<AttributeInstance> attributes;
 
-    public override IEnumerable<Symbol> Members => this.RootNamespace.Members;
+    public override IEnumerable<Symbol> AllMembers => this.RootNamespace.AllMembers;
 
     /// <summary>
     /// The version of this assembly.

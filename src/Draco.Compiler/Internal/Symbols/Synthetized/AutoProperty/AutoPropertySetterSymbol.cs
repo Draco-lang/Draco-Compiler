@@ -1,10 +1,9 @@
-using Draco.Compiler.Internal.BoundTree;
-using Draco.Compiler.Internal.Symbols.Source;
-using Draco.Compiler.Internal.Symbols.Syntax;
-using Draco.Compiler.Internal.Utilities;
 using System;
 using System.Collections.Immutable;
 using System.Threading;
+using Draco.Compiler.Internal.BoundTree;
+using Draco.Compiler.Internal.Symbols.Syntax;
+using Draco.Compiler.Internal.Utilities;
 using static Draco.Compiler.Internal.BoundTree.BoundTreeFactory;
 
 namespace Draco.Compiler.Internal.Symbols.Synthetized.AutoProperty;

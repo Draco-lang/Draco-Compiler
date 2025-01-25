@@ -50,7 +50,7 @@ public sealed class MemberCompletionProvider : CompletionProvider
 
         var referencedType = semanticModel.GetReferencedSymbolInternal(receiverSyntax);
         // NOTE: This is how we check for static access
-        if (referencedType?.IsDotnetType == true) return referencedType.StaticMembers;
+        if (referencedType?.IsTypeOnCilLevel == true) return referencedType.StaticMembers;
 
         // Otherwise this is an instance access
         if (receiverSyntax is not ExpressionSyntax accessedExpr) return [];

@@ -10,7 +10,7 @@ namespace Draco.Compiler.Internal.Symbols;
 /// </summary>
 internal abstract partial class ModuleSymbol : Symbol, IMemberSymbol
 {
-    public override Visibility Visibility => this.Members.Any(x => x.Visibility == Visibility.Public)
+    public override Visibility Visibility => this.AllMembers.Any(x => x.Visibility == Visibility.Public)
         ? Visibility.Public
         : Visibility.Internal;
     public override SymbolKind Kind => SymbolKind.Module;
@@ -33,11 +33,11 @@ internal abstract partial class ModuleSymbol : Symbol, IMemberSymbol
         for (var i = 0; i < parts.Length - 1; ++i)
         {
             var part = parts[i];
-            current = current.Members
+            current = current.AllMembers
                 .Where(m => m.MetadataName == part && m is ModuleSymbol or TypeSymbol)
                 .Single();
         }
 
-        return current.Members.Where(m => m.MetadataName == parts[^1]);
+        return current.AllMembers.Where(m => m.MetadataName == parts[^1]);
     }
 }

@@ -110,9 +110,17 @@ internal abstract partial class FunctionSymbol : Symbol, ITypedSymbol, IMemberSy
 
     public override bool IsSpecialName => this.IsConstructor;
 
+    // TODO: Apart from exposing the metadata name here, we need to take care of nested names for local methods for example
+    // The name should include the parent functions too, like func foo() { func bar() { ... } }
+    // the inner method should be called foo.bar in metadata
+
+    // NOTE: It seems like the backtick is only for types
+    // TODO: In that case, maybe move this logic out from Symbol and make MetadataName abstract or default to this instead?
+    public override string MetadataName => this.Name;
+
     // NOTE: We override for covariant return type
     public override FunctionSymbol? GenericDefinition => null;
-    public override IEnumerable<Symbol> Members => this.Parameters;
+    public override IEnumerable<Symbol> AllMembers => this.Parameters;
     public override SymbolKind Kind => SymbolKind.Function;
 
     public TypeSymbol Type => LazyInitializer.EnsureInitialized(ref this.type, this.BuildType);
@@ -123,6 +131,7 @@ internal abstract partial class FunctionSymbol : Symbol, ITypedSymbol, IMemberSy
     /// <summary>
     /// The bound body of this function, if it has one.
     /// This is the case for in-source and certain synthesized functions.
+    /// When null, the function will not be emitted.
     /// </summary>
     public virtual BoundStatement? Body => null;
 
@@ -178,7 +187,7 @@ internal abstract partial class FunctionSymbol : Symbol, ITypedSymbol, IMemberSy
     public override FunctionSymbol GenericInstantiate(Symbol? containingSymbol, GenericContext context) =>
         new FunctionInstanceSymbol(containingSymbol, this, context);
 
-    public override Api.Semantics.IFunctionSymbol ToApiSymbol() => new Api.Semantics.FunctionSymbol(this);
+    public override IFunctionSymbol ToApiSymbol() => new Api.Semantics.FunctionSymbol(this);
 
     public override void Accept(SymbolVisitor visitor) => visitor.VisitFunction(this);
     public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor) => visitor.VisitFunction(this);

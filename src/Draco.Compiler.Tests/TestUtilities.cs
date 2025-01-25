@@ -98,7 +98,7 @@ internal static class TestUtilities
     public static TMember AssertMember<TMember>(Symbol parent, string memberName)
         where TMember : Symbol
     {
-        var member = parent.Members.OfType<TMember>().Where(x => x.Name == memberName).FirstOrDefault();
+        var member = parent.AllMembers.OfType<TMember>().Where(x => x.Name == memberName).FirstOrDefault();
         if (member is null)
         {
             Assert.Fail($"member '{memberName}' not found in '{parent.Name}'");

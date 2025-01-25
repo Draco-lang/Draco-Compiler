@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Draco.Compiler.Api.Semantics;
 using Draco.Compiler.Internal.Symbols.Generic;
+using Draco.Compiler.Internal.Symbols.Synthetized;
 using Draco.Compiler.Internal.Utilities;
 
 namespace Draco.Compiler.Internal.Symbols;
@@ -111,9 +112,9 @@ internal abstract partial class TypeSymbol : Symbol, IMemberSymbol
     /// <summary>
     /// All members within this type that are not special members.
     /// </summary>
-    public IEnumerable<Symbol> NonSpecialMembers => this.Members.Where(m => !m.IsSpecialName);
+    public IEnumerable<Symbol> NonSpecialMembers => this.AllMembers.Where(m => !m.IsSpecialName);
 
-    public override sealed IEnumerable<Symbol> Members =>
+    public override sealed IEnumerable<Symbol> AllMembers =>
         InterlockedUtils.InitializeDefault(ref this.members, this.BuildMembers);
     private ImmutableArray<Symbol> members;
 
@@ -207,10 +208,17 @@ internal abstract partial class TypeSymbol : Symbol, IMemberSymbol
         return new TypeInstanceSymbol(containingSymbol, this, context);
     }
 
-    public override Api.Semantics.ITypeSymbol ToApiSymbol() => new Api.Semantics.TypeSymbol(this);
+    public override ITypeSymbol ToApiSymbol() => new Api.Semantics.TypeSymbol(this);
 
     public override void Accept(SymbolVisitor visitor) => visitor.VisitType(this);
     public override TResult Accept<TResult>(SymbolVisitor<TResult> visitor) => visitor.VisitType(this);
 
     public override abstract string ToString();
+
+    protected internal override sealed IEnumerable<Symbol> GetAdditionalSymbols()
+    {
+        if (this.IsAbstract) yield break;
+        // For non-abstract types we provide constructor functions
+        foreach (var ctor in this.Constructors) yield return new ConstructorFunctionSymbol(ctor);
+    }
 }

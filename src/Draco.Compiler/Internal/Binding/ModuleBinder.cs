@@ -16,7 +16,7 @@ internal class ModuleBinder : Binder
 
     public override Symbol? ContainingSymbol => this.symbol;
 
-    public override IEnumerable<Symbol> DeclaredSymbols => this.symbol.Members;
+    public override IEnumerable<Symbol> DeclaredSymbols => this.symbol.AllMembers;
 
     private readonly ModuleSymbol symbol;
 
@@ -34,7 +34,7 @@ internal class ModuleBinder : Binder
 
     internal override void LookupLocal(LookupResult result, string name, ref LookupFlags flags, Predicate<Symbol> allowSymbol, SyntaxNode? currentReference)
     {
-        foreach (var symbol in this.symbol.Members)
+        foreach (var symbol in this.symbol.AllMembers)
         {
             if (symbol.Name != name) continue;
             if (!allowSymbol(symbol)) continue;

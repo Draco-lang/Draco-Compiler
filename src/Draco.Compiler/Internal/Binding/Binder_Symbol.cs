@@ -115,7 +115,7 @@ internal partial class Binder
                 if (decl is VariableDeclarationSyntax { FieldModifier: not null } fieldDecl)
                 {
                     // Retrieve the symbol
-                    var symbol = module.Members
+                    var symbol = module.AllMembers
                         .OfType<ScriptFieldSymbol>()
                         .First(g => g.DeclaringSyntax == fieldDecl);
 
@@ -126,7 +126,7 @@ internal partial class Binder
                 if (decl is VariableDeclarationSyntax { FieldModifier: null } propDecl)
                 {
                     // Retrieve the symbol
-                    var symbol = module.Members
+                    var symbol = module.AllMembers
                         .OfType<ScriptAutoPropertySymbol>()
                         .First(g => g.DeclaringSyntax == propDecl);
 
@@ -138,7 +138,7 @@ internal partial class Binder
                 if (decl is FunctionDeclarationSyntax funcDecl)
                 {
                     // Retrieve the symbol
-                    var symbol = module.Members
+                    var symbol = module.AllMembers
                         .OfType<ScriptFunctionSymbol>()
                         .First(f => f.DeclaringSyntax == funcDecl);
 

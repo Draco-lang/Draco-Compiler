@@ -106,7 +106,7 @@ internal sealed class AttributeInstance(
         var wellKnownTypes = this.Constructor.DeclaringCompilation?.WellKnownTypes;
         if (wellKnownTypes is null) throw new System.NotImplementedException();
 
-        var translatedReflType = wellKnownTypes.TranslatePrmitive(reflType);
+        var translatedReflType = wellKnownTypes.TranslatePrimitive(reflType);
         if (translatedReflType is null) throw new System.NotImplementedException();
 
         return SymbolEqualityComparer.Default.Equals(translatedReflType, internalType);

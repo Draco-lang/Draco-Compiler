@@ -13,6 +13,7 @@ namespace Draco.Compiler.Internal.Symbols.Synthetized;
 /// </summary>
 internal sealed class ConstructorFunctionSymbol(FunctionSymbol ctorDefinition) : FunctionSymbol
 {
+    public override Symbol? ContainingSymbol => ctorDefinition.ContainingSymbol;
     public override ImmutableArray<AttributeInstance> Attributes => this.ConstructorSymbol.Attributes;
     public override string Name => this.InstantiatedType.Name;
     public override Api.Semantics.Visibility Visibility =>

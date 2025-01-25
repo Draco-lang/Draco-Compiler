@@ -5,8 +5,6 @@ using Draco.Compiler.Internal.BoundTree;
 using Draco.Compiler.Internal.Declarations;
 using Draco.Compiler.Internal.FlowAnalysis;
 using Draco.Compiler.Internal.Symbols.Syntax;
-using Draco.Compiler.Internal.Symbols.Synthetized.AutoProperty;
-using Draco.Compiler.Internal.Utilities;
 
 namespace Draco.Compiler.Internal.Symbols.Source;
 

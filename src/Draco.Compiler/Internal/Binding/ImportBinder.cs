@@ -80,7 +80,7 @@ internal sealed class ImportBinder(Binder parent, SyntaxNode declaringSyntax) : 
         }
         else
         {
-            return new(syntax, parts.ToImmutable(), importedSymbol.Members);
+            return new(syntax, parts.ToImmutable(), importedSymbol.AllMembers);
         }
 
         Symbol BindImportPath(ImportPathSyntax syntax)
@@ -108,7 +108,7 @@ internal sealed class ImportBinder(Binder parent, SyntaxNode declaringSyntax) : 
                     return parent;
                 }
                 // Look up in parent
-                var membersWithName = parent.Members
+                var membersWithName = parent.AllMembers
                     .Where(m => m.Name == mem.Member.Text)
                     .OfType<ModuleSymbol>()
                     .ToList();

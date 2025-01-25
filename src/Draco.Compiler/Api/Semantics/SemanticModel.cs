@@ -90,7 +90,7 @@ public sealed partial class SemanticModel : IBinderProvider
             case VariableDeclarationSyntax varDecl when varDecl.FieldModifier is null:
             {
                 // We need to search for this global
-                var globalSymbol = binder.ContainingSymbol?.Members
+                var globalSymbol = binder.ContainingSymbol?.AllMembers
                     .OfType<SyntaxAutoPropertySymbol>()
                     .FirstOrDefault(s => s.Name == varDecl.Name.Text);
                 globalSymbol?.Bind(this);
@@ -99,7 +99,7 @@ public sealed partial class SemanticModel : IBinderProvider
             case VariableDeclarationSyntax varDecl when varDecl.FieldModifier is not null:
             {
                 // We need to search for this global
-                var globalSymbol = binder.ContainingSymbol?.Members
+                var globalSymbol = binder.ContainingSymbol?.AllMembers
                     .OfType<SyntaxFieldSymbol>()
                     .FirstOrDefault(s => s.Name == varDecl.Name.Text);
                 globalSymbol?.Bind(this);
@@ -190,7 +190,7 @@ public sealed partial class SemanticModel : IBinderProvider
             if (module.DeclaringSyntaxes.Contains(syntax)) return containingSymbol;
 
             // Just search for the corresponding syntax
-            var symbol = module.Members
+            var symbol = module.AllMembers
                 .SingleOrDefault(sym => sym.DeclaringSyntax == syntax);
             return symbol;
         }
@@ -250,7 +250,7 @@ public sealed partial class SemanticModel : IBinderProvider
         if (containingSymbol is ISourceSymbol sourceSymbol)
         {
             sourceSymbol.Bind(this);
-            foreach (var nested in containingSymbol.Members.OfType<ISourceSymbol>()) nested.Bind(this);
+            foreach (var nested in containingSymbol.AllMembers.OfType<ISourceSymbol>()) nested.Bind(this);
         }
 
         // Attempt to retrieve
@@ -352,7 +352,7 @@ public sealed partial class SemanticModel : IBinderProvider
         {
             var receiverSymbol = this.GetReferencedSymbolInternal(member.Accessed);
             // NOTE: This is how we check for static access
-            if (receiverSymbol?.IsDotnetType == true)
+            if (receiverSymbol?.IsTypeOnCilLevel == true)
             {
                 result.AddRange(receiverSymbol.StaticMembers.Where(m => m.Name == member.Member.Text));
             }

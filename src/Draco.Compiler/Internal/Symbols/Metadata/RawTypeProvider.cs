@@ -113,7 +113,7 @@ internal sealed class RawTypeProvider(Compilation compilation)
     {
         var typeAncestor = genericContext.AncestorChain
             // Both types and modules are a type in .NET world
-            .Where(s => s.IsDotnetType)
+            .Where(s => s.IsTypeOnCilLevel)
             .First();
 
         return typeAncestor.IsGenericDefinition
@@ -225,7 +225,7 @@ internal sealed class RawTypeProvider(Compilation compilation)
             var nestedGenericArgc = definition.GetGenericParameters().Count;
             return declaringSymbol
                 .DefinedMembers
-                .Where(s => s.IsDotnetType)
+                .Where(s => s.IsTypeOnCilLevel)
                 .Where(t => t.Name == nestedName && t.GenericParameters.Length == nestedGenericArgc)
                 .Single();
         }
@@ -274,7 +274,7 @@ internal sealed class RawTypeProvider(Compilation compilation)
 
         return assembly.RootNamespace
             .Lookup(parts.ToImmutable())
-            .Where(s => s.IsDotnetType)
+            .Where(s => s.IsTypeOnCilLevel)
             .Single();
     }
 

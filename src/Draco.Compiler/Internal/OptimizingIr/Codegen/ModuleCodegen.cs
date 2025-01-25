@@ -114,14 +114,14 @@ internal sealed class ModuleCodegen : SymbolVisitor
 
     public override void VisitModule(ModuleSymbol moduleSymbol)
     {
-        foreach (var subModuleSymbol in moduleSymbol.Members.OfType<ModuleSymbol>())
+        foreach (var subModuleSymbol in moduleSymbol.AllMembers.OfType<ModuleSymbol>())
         {
             var module = this.module.DefineModule(subModuleSymbol);
             var moduleCodegen = new ModuleCodegen(this.Compilation, module, this.EmitSequencePoints);
             subModuleSymbol.Accept(moduleCodegen);
         }
 
-        foreach (var member in moduleSymbol.Members.Where(x => x is not ModuleSymbol))
+        foreach (var member in moduleSymbol.AllMembers.Where(x => x is not ModuleSymbol))
         {
             member.Accept(this);
         }

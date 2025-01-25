@@ -6,7 +6,7 @@ namespace Draco.Compiler.Internal.Symbols;
 internal interface IMemberSymbol
 {
     /// <summary>
-    /// Specifying if given symbol is static.
+    /// Specifying if the given symbol is static.
     /// </summary>
     public bool IsStatic { get; }
 

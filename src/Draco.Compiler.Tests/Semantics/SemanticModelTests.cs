@@ -169,7 +169,7 @@ public sealed class SemanticModelTests
         Assert.Empty(diags);
         Assert.NotNull(writeLineSymbol);
         Assert.NotNull(consoleSymbol);
-        Assert.Contains(writeLineSymbol, consoleSymbol.Members);
+        Assert.Contains(writeLineSymbol, consoleSymbol.AllMembers);
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public sealed class SemanticModelTests
         Assert.NotNull(writeLineSymbol);
         Assert.NotNull(consoleSymbol);
         Assert.NotNull(systemSymbol);
-        Assert.Contains(writeLineSymbol, consoleSymbol.Members);
-        Assert.Contains(consoleSymbol, systemSymbol.Members);
+        Assert.Contains(writeLineSymbol, consoleSymbol.AllMembers);
+        Assert.Contains(consoleSymbol, systemSymbol.AllMembers);
     }
 
     [Fact]
@@ -250,8 +250,8 @@ public sealed class SemanticModelTests
         Assert.NotNull(sbSymbol);
         Assert.NotNull(textSymbol);
         Assert.NotNull(systemSymbol);
-        Assert.Contains(sbSymbol, textSymbol.Members);
-        Assert.Contains(textSymbol, systemSymbol.Members);
+        Assert.Contains(sbSymbol, textSymbol.AllMembers);
+        Assert.Contains(textSymbol, systemSymbol.AllMembers);
     }
 
     [Fact]
@@ -292,7 +292,7 @@ public sealed class SemanticModelTests
         Assert.NotNull(errorSymbol);
         Assert.NotNull(consoleSymbol);
         Assert.NotNull(systemSymbol);
-        Assert.Contains(consoleSymbol, systemSymbol.Members);
+        Assert.Contains(consoleSymbol, systemSymbol.AllMembers);
         Assert.True(errorSymbol.IsError);
     }
 
@@ -331,7 +331,7 @@ public sealed class SemanticModelTests
         Assert.Empty(diags);
         Assert.NotNull(appendLineSymbol);
         Assert.NotNull(builderSymbol);
-        Assert.Contains(appendLineSymbol, builderSymbol.Type.Members);
+        Assert.Contains(appendLineSymbol, builderSymbol.Type.AllMembers);
     }
 
     [Fact]
@@ -402,8 +402,8 @@ public sealed class SemanticModelTests
         Assert.NotNull(systemSymbol);
         Assert.NotNull(systemCollectionsSymbol);
         Assert.NotNull(systemCollectionsGenericSymbol);
-        Assert.Contains(systemCollectionsSymbol, systemSymbol.Members);
-        Assert.Contains(systemCollectionsGenericSymbol, systemCollectionsSymbol.Members);
+        Assert.Contains(systemCollectionsSymbol, systemSymbol.AllMembers);
+        Assert.Contains(systemCollectionsGenericSymbol, systemCollectionsSymbol.AllMembers);
     }
 
     [Fact]
@@ -440,8 +440,8 @@ public sealed class SemanticModelTests
         Assert.NotNull(systemSymbol);
         Assert.NotNull(systemCollectionsSymbol);
         Assert.NotNull(systemCollectionsGenericSymbol);
-        Assert.Contains(systemCollectionsSymbol, systemSymbol.Members);
-        Assert.Contains(systemCollectionsGenericSymbol, systemCollectionsSymbol.Members);
+        Assert.Contains(systemCollectionsSymbol, systemSymbol.AllMembers);
+        Assert.Contains(systemCollectionsGenericSymbol, systemCollectionsSymbol.AllMembers);
     }
 
     [Fact]
@@ -475,7 +475,7 @@ public sealed class SemanticModelTests
         Assert.NotNull(collectionsSymbol);
         Assert.NotNull(nonexistingSymbol);
         Assert.NotNull(fooSymbol);
-        Assert.Contains(collectionsSymbol, systemSymbol.Members);
+        Assert.Contains(collectionsSymbol, systemSymbol.AllMembers);
         Assert.True(nonexistingSymbol.IsError);
         Assert.True(fooSymbol.IsError);
     }

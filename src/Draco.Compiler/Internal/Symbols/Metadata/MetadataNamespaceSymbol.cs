@@ -17,7 +17,7 @@ internal sealed class MetadataNamespaceSymbol(
 {
     public override Compilation DeclaringCompilation => this.Assembly.DeclaringCompilation;
 
-    public override IEnumerable<Symbol> Members =>
+    public override IEnumerable<Symbol> AllMembers =>
         InterlockedUtils.InitializeDefault(ref this.members, this.BuildMembers);
     private ImmutableArray<Symbol> members;
 
@@ -57,7 +57,7 @@ internal sealed class MetadataNamespaceSymbol(
             var symbol = MetadataSymbol.ToSymbol(this, typeDef);
             result.Add(symbol);
             // Add additional symbols
-            result.AddRange(MetadataSymbol.GetAdditionalSymbols(symbol));
+            result.AddRange(symbol.GetAdditionalSymbols());
         }
 
         // Done
@@ -79,12 +79,12 @@ internal sealed class MetadataNamespaceSymbol(
         for (var i = 0; i < parts.Length - 1; ++i)
         {
             var part = parts[i];
-            current = current.Members
+            current = current.AllMembers
                 .Where(m => m.MetadataName == part && m is ModuleSymbol or TypeSymbol)
                 .SingleOrDefault();
             if (current is null) return null;
         }
 
-        return current.Members.SingleOrDefault(m => MetadataDocumentation.GetPrefixedDocumentationName(m) == prefixedDocumentationName);
+        return current.AllMembers.SingleOrDefault(m => MetadataDocumentation.GetPrefixedDocumentationName(m) == prefixedDocumentationName);
     }
 }

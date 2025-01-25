@@ -55,7 +55,7 @@ internal sealed class GlobalImportsBinder : Binder
                 {
                     throw new InvalidOperationException($"the path '{path}' is invalid for global imports");
                 }
-                result.AddRange(module.Members);
+                result.AddRange(module.AllMembers);
             }
         }
 

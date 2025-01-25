@@ -22,7 +22,7 @@ internal sealed class SourceModuleSymbol : ModuleSymbol, ISourceSymbol
 {
     public override Compilation DeclaringCompilation { get; }
 
-    public override IEnumerable<Symbol> Members => this.BindMembersIfNeeded(this.DeclaringCompilation!);
+    public override IEnumerable<Symbol> AllMembers => this.BindMembersIfNeeded(this.DeclaringCompilation!);
     private ImmutableArray<Symbol> members;
 
     public override Symbol? ContainingSymbol { get; }
@@ -72,21 +72,17 @@ internal sealed class SourceModuleSymbol : ModuleSymbol, ISourceSymbol
         var result = ImmutableArray.CreateBuilder<Symbol>();
 
         // A declaration can yield multiple members, like an auto-property a getter and setter
-        foreach (var member in this.declaration.Children.SelectMany(this.BuildMember))
+        foreach (var member in this.declaration.Children.Select(this.BuildMember))
         {
             var earlierMember = result.FirstOrDefault(s => s.Name == member.Name);
             result.Add(member);
+            result.AddRange(member.GetAdditionalSymbols());
 
-            // We chech for illegal shadowing
+            // We check for illegal shadowing
             if (earlierMember is null) continue;
 
             // Overloading is legal
             if (member is FunctionSymbol && earlierMember is FunctionSymbol) continue;
-
-            // NOTE: An illegal shadowing can be caused by a property, which introduces additional synthetized symbols
-            // like the backing field
-            // We check for these synthetized symbols and if they are special-named, we ignore them
-            if (member.IsSpecialName) continue;
 
             // Illegal
             var syntax = member.DeclaringSyntax;
@@ -100,29 +96,14 @@ internal sealed class SourceModuleSymbol : ModuleSymbol, ISourceSymbol
         return result.ToImmutable();
     }
 
-    private IEnumerable<Symbol> BuildMember(Declaration declaration) => declaration switch
+    private Symbol BuildMember(Declaration declaration) => declaration switch
     {
-        FunctionDeclaration f => [this.BuildFunction(f)],
-        MergedModuleDeclaration m => [this.BuildModule(m)],
-        GlobalDeclaration g when g.Syntax.FieldModifier is not null => [this.BuildGlobalField(g)],
-        GlobalDeclaration g when g.Syntax.FieldModifier is null => this.BuildGlobalProperty(g),
+        FunctionDeclaration f => new SourceFunctionSymbol(this, f),
+        MergedModuleDeclaration m => new SourceModuleSymbol(this.DeclaringCompilation, this, m),
+        GlobalDeclaration g when g.Syntax.FieldModifier is not null => new SourceFieldSymbol(this, g),
+        GlobalDeclaration g when g.Syntax.FieldModifier is null => new SourceAutoPropertySymbol(this, g),
         _ => throw new ArgumentOutOfRangeException(nameof(declaration)),
     };
-
-    private SourceFunctionSymbol BuildFunction(FunctionDeclaration declaration) => new(this, declaration);
-    private SourceFieldSymbol BuildGlobalField(GlobalDeclaration declaration) => new(this, declaration);
-
-    private IEnumerable<Symbol> BuildGlobalProperty(GlobalDeclaration declaration)
-    {
-        // Auto-property, need to add getter, setter and backing field
-        var prop = new SourceAutoPropertySymbol(this, declaration);
-        yield return prop;
-        if (prop.Getter is not null) yield return prop.Getter;
-        if (prop.Setter is not null) yield return prop.Setter;
-        yield return prop.BackingField;
-    }
-
-    private SourceModuleSymbol BuildModule(MergedModuleDeclaration declaration) => new(this.DeclaringCompilation, this, declaration);
 
     private SymbolDocumentation BuildDocumentation() =>
         MarkdownDocumentationExtractor.Extract(this);

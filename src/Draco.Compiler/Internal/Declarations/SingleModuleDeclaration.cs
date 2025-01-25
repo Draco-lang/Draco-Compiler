@@ -27,13 +27,7 @@ internal sealed class SingleModuleDeclaration(string name, SplitPath path, Conta
         InterlockedUtils.InitializeDefault(ref this.children, this.BuildChildren);
     private ImmutableArray<Declaration> children;
 
-    public override IEnumerable<SyntaxNode> DeclaringSyntaxes
-    {
-        get
-        {
-            yield return this.Syntax;
-        }
-    }
+    public override IEnumerable<SyntaxNode> DeclaringSyntaxes => [this.Syntax];
 
     private ImmutableArray<Declaration> BuildChildren() =>
         this.Syntax.Declarations.Select(this.BuildChild).OfType<Declaration>().ToImmutableArray();

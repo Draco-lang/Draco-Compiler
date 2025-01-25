@@ -17,11 +17,5 @@ internal sealed class FunctionDeclaration(FunctionDeclarationSyntax syntax)
 
     public override ImmutableArray<Declaration> Children => [];
 
-    public override IEnumerable<SyntaxNode> DeclaringSyntaxes
-    {
-        get
-        {
-            yield return this.Syntax;
-        }
-    }
+    public override IEnumerable<SyntaxNode> DeclaringSyntaxes => [this.Syntax];
 }

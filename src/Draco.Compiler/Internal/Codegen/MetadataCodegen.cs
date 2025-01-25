@@ -260,7 +260,7 @@ internal sealed class MetadataCodegen : MetadataWriter
                 // Search for the function where the generic definitions are the same but the container is not the array
                 var functionInBase = type.BaseTypes
                     .Except([type], SymbolEqualityComparer.Default)
-                    .SelectMany(b => b.Members)
+                    .SelectMany(b => b.AllMembers)
                     .OfType<FunctionSymbol>()
                     .First(f => SymbolEqualityComparer.Default.Equals(f.GenericDefinition, func.GenericDefinition));
                 return functionInBase.ContainingSymbol!;

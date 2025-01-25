@@ -13,7 +13,7 @@ internal sealed class MergedModuleSymbol(
     string name,
     ImmutableArray<ModuleSymbol> modules) : ModuleSymbol
 {
-    public override IEnumerable<Symbol> Members =>
+    public override IEnumerable<Symbol> AllMembers =>
         InterlockedUtils.InitializeDefault(ref this.members, this.BuildMembers);
     private ImmutableArray<Symbol> members;
 
@@ -27,7 +27,7 @@ internal sealed class MergedModuleSymbol(
         foreach (var singleModule in modules)
         {
             // singleModule is a piece of this module, we need to go through each element of that
-            foreach (var member in singleModule.Members)
+            foreach (var member in singleModule.AllMembers)
             {
                 if (member is ModuleSymbol module)
                 {
